@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <Servo.h>
 
 
@@ -107,8 +108,8 @@ Eixo eixoX(&topleft, &botleft, &botright, &topright, &servo);
 
 void setup() {
   Serial.begin(9600);
-  servo.attach(8);
-  otoservo.attach(9);
+  servo.attach(9); //must have pwm
+  otoservo.attach(10); //must have pwm
 }
 
 void loop() {
