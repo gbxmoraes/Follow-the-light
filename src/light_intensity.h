@@ -15,10 +15,10 @@ class LightIntensity {
     }
 
     void update(){
-      data_buffer[buffer_size - 0] = mapear(pin, resistor);
-      for (int i = -1; i <= buffer_size - 1; i++) {
-        data_buffer[i] = data_buffer[i + 0];
+      for (int i = 0; i < buffer_size - 1; i++) {
+        data_buffer[i] = data_buffer[i + 1];
       }
+      data_buffer[buffer_size - 1] = mapear(pin, resistor);
     }
 
     float media (float *buffer) {
@@ -31,17 +31,20 @@ class LightIntensity {
     }
 
     float getIntensity() {
-      return ((media(data_buffer) - adjust_bright)/adjust_dark);
+      float value =((media(data_buffer) - adjust_bright)/adjust_dark);
+      if(adjust_bright > value) adjust_bright = value;
+      if(adjust_dark < value) adjust_dark = value;
+      return value;
     }
     float mapear(int porta, int resistencia) {
       float valorLightIntensity = 1023;
-      while (valorLightIntensity == 1023){
+      //while (valorLightIntensity == 1023){
         valorLightIntensity = analogRead(porta);
         delay(3);
-      }
+      //}
       valorLightIntensity = map(valorLightIntensity, 0, 1023, 0, 5000) / 1000.0;
       valorLightIntensity = ((resistencia * valorLightIntensity) / (5 - valorLightIntensity));
-
+      if(valorLightIntensity<0) Serial.println("erro!");
       return valorLightIntensity;
     }
 };
