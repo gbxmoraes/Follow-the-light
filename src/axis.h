@@ -8,6 +8,7 @@ class Axis {
     Servo* servo;
 
     int angle = 90;
+    float last_diference;
 
   public:
     Axis(LightIntensity *topright, LightIntensity *topleft, LightIntensity *botleft, LightIntensity *botright, Servo* servo) {
@@ -16,25 +17,28 @@ class Axis {
       this->botleft = botleft;
       this->botright = botright;
       this->servo = servo;
+      last_diference = 0;
     };
-    int incremento (int last_angle) {
+    float incremento (int last_angle, float diference) {
       if (last_angle >= 180) return last_angle;
-      else return (last_angle + 3);
+      else return (last_angle + diference);
     }
-    int decremento (int last_angle) {
+    float decremento (int last_angle, float diference) {
       if (last_angle <= 0) return last_angle;
-      else return (last_angle - 3);
+      else return (last_angle - diference);
     }
     void update() {
       float top = ((*topright).getIntensity() + (*topleft).getIntensity()) / 2;
       float bottom = ((*botleft).getIntensity() + (*botright).getIntensity()) / 2;
-      float diferenca = fabs(top - bottom);
-
-      if (diferenca > 1100) {
-        if (top > bottom)  angle = incremento(angle);
-        else angle = decremento(angle);
-        (*servo).write(angle);
-      }
+      float diference = fabs(top - bottom);
+      float delta = fabs(diference - last_diference);
+      float p = 0.4, d = 0.1;
+      float control = diference*p - delta*d;
+      Serial.println(control);
+      if (top > bottom)  angle = incremento(angle, control);
+      else angle = decremento(angle, control);
+      (*servo).write((int) angle);
+      last_diference = diference;
     }
 
 };

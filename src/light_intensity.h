@@ -1,4 +1,4 @@
-const int buffer_size = 50;
+const int buffer_size = 10;
 class LightIntensity {
 
     float resistor;
