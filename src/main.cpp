@@ -30,68 +30,9 @@ float mapear(int porta, int resistencia) {
   return valorLDR;
 }
 
-class LDR {
-    float resistor;
-    int pin;
-    float valores[tamanho];
-    float correcao_claro;
-    float correcao_escuro;
-  public:
-    LDR(float resistor, int pin, float claro, float escuro) {
-      this->resistor = resistor;
-      this->pin = pin;
-      correcao_claro = claro;
-      correcao_escuro = escuro;
-    }
-
-    void atualizar(){
-      valores[tamanho - 1] = mapear(pin, resistor);
-      for (int i = 0; i <= tamanho - 2; i++) {
-        valores[i] = valores[i + 1];
-      }
-    }
-
-    float getIntensity() {
-      return ((media(valores) - correcao_claro)/correcao_escuro);
-    }
-};
+#include <light_intensity.h>
+#include <axis.h>
 //posiciona o motor de acordo com a media dos dois primeiros LDR  comparada aos dois outros.
-class Eixo {
-
-    LDR *topright;
-    LDR *topleft;
-    LDR *botleft;
-    LDR *botright;
-    Servo* servo;
-  public:
-    Eixo(LDR *topright, LDR *topleft, LDR *botleft, LDR *botright, Servo* servo) {
-      this->topright = topright;
-      this->topleft = topleft;
-      this->botleft = botleft;
-      this->botright = botright;
-      this->servo = servo;
-    };
-    int incremento (int late) {
-      if (late >= 180) return late;
-      else return (late + 3);
-    }
-    int decremento (int late) {
-      if (late <= 0) return late;
-      else return (late - 3);
-    }
-    void atualizar() {
-      float media = ((*topright).getIntensity() + (*topleft).getIntensity()) / 2;
-      float otomedia = ((*botleft).getIntensity() + (*botright).getIntensity()) / 2;
-      float diferenca = fabs(media - otomedia);
-
-      if (diferenca > 1100) {
-        if (media > otomedia)  lat = incremento(lat);
-        else lat = decremento(lat);
-        (*servo).write(lat);
-      }
-    }
-
-};
 
 /*LDR topright(390, A0, 1805.10, );
 LDR topleft(390, A1, 1463.45);
