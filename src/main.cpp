@@ -3,6 +3,10 @@
 #include <light_intensity.h>
 #include <axis.h>
 
+#define baseServoPin 9
+#define rollServoPin 10
+#define serialTime 300
+
 Servo base_servo;
 Servo roll_servo;
 
@@ -18,33 +22,31 @@ long time_control;
 
 void setup() {
   Serial.begin(9600);
-  base_servo.attach(9); //must have pwm
-  roll_servo.attach(10); //must have pwm
+  base_servo.attach(baseServoPin); //must have pwm
+  roll_servo.attach(rollServoPin); //must have pwm
   time_control = millis();
 }
 
 
 void loop() {
-
+  //Atualiza os valores de intensidade de luz.
   topright.update();
   topleft.update();
   botright.update();
   botleft.update();
-
-if(time_control + 300 < millis()){
-  time_control = millis();
-  Serial.print(topright.getIntensity());
-  Serial.print(",");
-  Serial.print(topleft.getIntensity());
-  Serial.print(",");
-  Serial.print(botleft.getIntensity());
-  Serial.print(",");
-  Serial.print(botright.getIntensity());
-  Serial.println("");
-}
+  //Atualiza a posicao dos servos.
   eixoX.update();
   eixoY.update();
 
-  //delay(50);
-
+  if(millis()-time_control>=serialTime){
+    time_control = millis();
+    Serial.print(topright.getIntensity());
+    Serial.print(",");
+    Serial.print(topleft.getIntensity());
+    Serial.print(",");
+    Serial.print(botleft.getIntensity());
+    Serial.print(",");
+    Serial.print(botright.getIntensity());
+    Serial.println();
+  }
 }
